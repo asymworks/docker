@@ -1,17 +1,19 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}:4.1
 
+VOLUME /config
 WORKDIR /usr/src
 
+## Setup Home Assistant
+COPY homeassistant homeassistant
+
 # Add hass user so Home Assistant does not run as root
+RUN mkdir /config
 RUN addgroup -g 8123 -S hass
 RUN adduser -u 8123 -G hass -S -h /usr/src/homeassistant -H hass \
 		&& adduser hass dialout \
 		&& chown -R hass:hass /config \
 		&& chown -R hass:hass /usr/src/homeassistant
-
-## Setup Home Assistant
-COPY homeassistant homeassistant
 
 # Patch Kodi to Always Poll
 COPY 50-always-poll-kodi.patch /tmp/50-always-poll-kodi.patch
