@@ -1,5 +1,5 @@
---- a/homeassistant/components/kodi/media_player.py	2019-08-03 13:26:04.012756909 -0700
-+++ b/homeassistant/components/kodi/media_player.py	2019-08-03 13:31:03.877703759 -0700
+--- a/homeassistant/homeassistant/components/kodi/media_player.py	2019-08-03 13:26:04.012756909 -0700
++++ b/homeassistant/homeassistant/components/kodi/media_player.py	2019-08-03 13:31:03.877703759 -0700
 @@ -285,7 +285,7 @@
              await getattr(player, method["method"])(**params)
  
