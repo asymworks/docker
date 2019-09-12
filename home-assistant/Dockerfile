@@ -7,14 +7,6 @@ WORKDIR /usr/src
 ## Setup Home Assistant
 COPY homeassistant homeassistant
 
-# Add hass user so Home Assistant does not run as root
-RUN mkdir /config
-RUN addgroup -g 8123 -S hass
-RUN adduser -u 8123 -G hass -S -h /usr/src/homeassistant -H hass \
-		&& adduser hass dialout \
-		&& chown -R hass:hass /config \
-		&& chown -R hass:hass /usr/src/homeassistant
-
 # Patch Kodi to Always Poll
 COPY 50-always-poll-kodi.patch /tmp/50-always-poll-kodi.patch
 RUN patch -p1 < /tmp/50-always-poll-kodi.patch
@@ -26,6 +18,13 @@ RUN pip3 install --no-cache-dir --no-index --only-binary=:all: --find-links "${W
     && pip3 install --no-cache-dir --no-index --only-binary=:all: --find-links "${WHEELS_LINKS}" \
         -e ./homeassistant \
     && python3 -m compileall homeassistant/homeassistant
+
+# Add hass user so Home Assistant does not run as root
+RUN addgroup -g 8123 -S hass
+RUN adduser -u 8123 -G hass -S -h /usr/src/homeassistant -H hass \
+		&& adduser hass dialout \
+		&& chown -R hass:hass /config \
+		&& chown -R hass:hass /usr/src/homeassistant
 
 # Switch to Home Assistant user
 USER hass
