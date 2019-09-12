@@ -1,14 +1,5 @@
 --- a/homeassistant/homeassistant/components/kodi/media_player.py	2019-08-03 13:26:04.012756909 -0700
 +++ b/homeassistant/homeassistant/components/kodi/media_player.py	2019-08-03 13:31:03.877703759 -0700
-@@ -285,7 +285,7 @@
-             await getattr(player, method["method"])(**params)
- 
-         for player in target_players:
--            if player.should_poll:
-+            if not player.is_connected:
-                 update_coro = player.async_update_ha_state(True)
-                 update_tasks.append(update_coro)
- 
 @@ -590,9 +590,16 @@
          return self._name
  
