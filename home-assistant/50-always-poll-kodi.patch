@@ -1,6 +1,17 @@
---- a/homeassistant/homeassistant/components/kodi/media_player.py	2019-08-03 13:26:04.012756909 -0700
-+++ b/homeassistant/homeassistant/components/kodi/media_player.py	2019-08-03 13:31:03.877703759 -0700
-@@ -590,9 +590,16 @@
+--- a/homeassistant/homeassistant/components/kodi/__init__.py	2019-09-12 13:23:11.000000000 -0700
++++ b/homeassistant/homeassistant/components/kodi/__init__.py	2019-09-12 13:24:28.000000000 -0700
+@@ -74,7 +74,7 @@
+                 await getattr(player, method["method"])(**params)
+ 
+             for player in target_players:
+-                if player.should_poll:
++                if not player.is_connected:
+                     update_coro = player.async_update_ha_state(True)
+                     update_tasks.append(update_coro)
+ 
+--- a/homeassistant/homeassistant/components/kodi/media_player.py	2019-09-12 13:23:11.000000000 -0700
++++ b/homeassistant/homeassistant/components/kodi/media_player.py	2019-09-12 13:25:55.000000000 -0700
+@@ -513,9 +513,16 @@
          return self._name
  
      @property
@@ -18,15 +29,3 @@
  
      @property
      def volume_level(self):
-
---- a/homeassistant/homeassistant/components/kodi/__init__.py   2019-08-03 13:26:04.012756909 -0700
-+++ b/homeassistant/homeassistant/components/kodi/__init__.py   2019-08-03 13:31:03.877703759 -0700
-@@ -77,7 +77,7 @@
-             await getattr(player, method["method"])(**params)
- 
-         for player in target_players:
--            if player.should_poll:
-+            if not player.is_connected:
-                 update_coro = player.async_update_ha_state(True)
-                 update_tasks.append(update_coro)
- 
