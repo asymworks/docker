@@ -3,6 +3,13 @@ FROM ${BUILD_FROM}:4.1
 
 WORKDIR /usr/src
 
+# Add hass user so Home Assistant does not run as root
+RUN addgroup -g 8123 -S hass
+RUN adduser -u 8123 -G hass -S -h /usr/src/homeassistant -H hass \
+		&& adduser hass dialout \
+		&& chown -R hass:hass /config \
+		&& chown -R hass:hass /usr/src/homeassistant
+
 ## Setup Home Assistant
 COPY homeassistant homeassistant
 
@@ -16,7 +23,10 @@ RUN pip3 install --no-cache-dir --no-index --only-binary=:all: --find-links "${W
         -r homeassistant/requirements_all.txt -c homeassistant/homeassistant/package_constraints.txt \
     && pip3 install --no-cache-dir --no-index --only-binary=:all: --find-links "${WHEELS_LINKS}" \
         -e ./homeassistant \
-    && python3 -m compileall homeassistant/homeassistant   
+    && python3 -m compileall homeassistant/homeassistant
+
+# Switch to Home Assistant user
+USER hass
 
 # Run Home Assistant
 WORKDIR /config
