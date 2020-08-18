@@ -25,8 +25,6 @@ if [ -z "${BORG_REPO:-}" ]; then
     quit 1
 fi
 
-RC_TRANSFERS="${RCLONE_TRANSFERS:-32}"
-
 if [ -z "${RCLONE_CONFIG}" ]; then
 	RC_CONFIG=''
 else
@@ -37,4 +35,4 @@ fi
 rclone -v sync \
 	$BORG_REPO \
 	$RCLONE_REMOTE \
-	--transfers $RCLONE_TRANSFERS \
+	--transfers ${RCLONE_TRANSFERS:-32} \
