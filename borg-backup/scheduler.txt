@@ -1,4 +1,5 @@
 # Borg Backup Crontab
 # min	hour	day		month	weekday	command
 30		22		*		*		*		/borg/backup.sh 2>&1
+30		02		*		*		*		/borg/rclone.sh 2>&1
 # End of Crontab
