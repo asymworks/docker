@@ -53,7 +53,7 @@ BACKUP_DIRS="${BACKUP_DIRS:-/mnt/backup}"
 if [ -z "${EXCLUDE_FILE:-}" ]; then
 	EXCLUDES=''
 else
-	EXCLUDES='--exclude-from ${EXCLUDE_FILE} '
+	EXCLUDES="--exclude-from ${EXCLUDE_FILE} "
 fi
 
 # Create Archive
