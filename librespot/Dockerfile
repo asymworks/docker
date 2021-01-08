@@ -17,16 +17,13 @@ RUN apk add alsa-lib libgcc
 COPY --from=builder \
  /src/librespot \
  /usr/bin/librespot
+COPY entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.sh
 
 ENV LIBRESPOT_NAME=librespot
 ENV LIBRESPOT_DEVICE_TYPE=speaker
 ENV LIBRESPOT_AUDIO_OPTS=
 ENV LIBRESPOT_EXTRA_OPTS=
 
-ENTRYPOINT [ "/usr/bin/librespot" ]
-CMD [ \
- "--name '${LIBRESPOT_NAME}'", \
- "--device-type ${LIBRESPOT_DEVICE_TYPE}", \
- "${LIBRESPOT_AUDIO_OPTS}", \
- "${LIBRESPOT_EXTRA_OPTS}" \
-]
+ENTRYPOINT [ "/usr/bin/entrypoint.sh" ]
+CMD [ "start" ]
