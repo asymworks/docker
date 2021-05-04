@@ -17,9 +17,7 @@ RUN /home/qcadoo/build-qcadoo.sh
 # Deploy Container
 FROM openjdk:8-jdk-slim
 
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh \
-    && groupadd -r -g 7890 qcadoo \
+RUN groupadd -r -g 7890 qcadoo \
     && useradd -r -u 7890 -g qcadoo -d /srv/qcadoo -m qcadoo
 
 COPY --from=builder /home/qcadoo/mes/mes-application/target/mes-application.zip /tmp/mes-application.zip
@@ -28,6 +26,9 @@ RUN apt-get update \
     && unzip -d /srv/qcadoo/ /tmp/mes-application.zip \
     && chown -R qcadoo:qcadoo /srv/qcadoo/mes-application \
     && chmod +x /srv/qcadoo/mes-application/bin/*.sh
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 8080
 USER qcadoo
