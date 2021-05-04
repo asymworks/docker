@@ -33,5 +33,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 EXPOSE 8080
 USER qcadoo
 
+COPY db.properties.conf /srv/qcadoo/db.properties.conf
+
 ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 CMD [ "start" ]
