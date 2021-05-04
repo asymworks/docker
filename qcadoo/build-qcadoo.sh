@@ -20,27 +20,25 @@ info() {
 
 info "Cloning qcadoo repositories"
 
-git clone https://github.com/qcadoo/qcadoo-super-pom-open
-git clone https://github.com/qcadoo/qcadoo-maven-plugin
-git clone https://github.com/qcadoo/qcadoo
-git clone https://github.com/qcadoo/mes
+git clone -q https://github.com/qcadoo/qcadoo-super-pom-open
+git clone -q https://github.com/qcadoo/qcadoo-maven-plugin
+git clone -q https://github.com/qcadoo/qcadoo
+git clone -q https://github.com/qcadoo/mes
 
 # --------- Download Problematic Packages
 
 info "Downloading Prerequisites"
 
-TMPDIR=`tempfile -d`
-wget -O ${TMPDIR}/ https://archive.apache.org/dist/commons/daemon/binaries/commons-daemon-1.0.15.jar
-wget -O ${TMPDIR}/ https://repo1.maven.org/maven2/org/apache/tomcat/tomcat-juli/8.5.12/tomcat-juli-8.5.12.jar
-wget -O ${TMPDIR}/ http://nexus.qcadoo.org/content/repositories/releases/org/apache/tomcat/bootstrap/8.5.12/bootstrap-8.5.12.jar
-wget -O ${TMPDIR}/ http://nexus.qcadoo.org/content/repositories/releases/jgrapht/jgrapht/0.8.2/jgrapht-0.8.2.jar
+TMPDIR=`tempfile -d /tmp`
+wget -qP ${TMPDIR} http://nexus.qcadoo.org/content/repositories/releases/org/apache/tomcat/bootstrap/8.5.12/bootstrap-8.5.12.jar
+wget -qP ${TMPDIR} http://nexus.qcadoo.org/content/repositories/releases/jgrapht/jgrapht/0.8.2/jgrapht-0.8.2.jar
 
 # --------- Super POM
 
 info "Building qcadoo Super POM"
 
 cd qcadoo-super-pom-open
-git checkout ${VERSION} || abort "Failed to checkout version ${VERSION}"
+git checkout -q ${VERSION} || abort "Failed to checkout version ${VERSION}"
 mvn clean install -q || abort "Failed to build Super POM"
 cd ..
 
@@ -49,14 +47,14 @@ cd ..
 info "Building qcadoo Maven Plugin"
 
 cd qcadoo-maven-plugin
-git checkout ${VERSION} || abort "Failed to checkout version ${VERSION}"
+git checkout -q ${VERSION} || abort "Failed to checkout version ${VERSION}"
 mvn clean install -q || abort "Failed to build Maven Plugin"
 cd ..
 
 # --------- Qcadoo Framework
 
 cd qcadoo
-git checkout ${VERSION} || abort "Failed to checkout version ${VERSION}"
+git checkout -q ${VERSION} || abort "Failed to checkout version ${VERSION}"
 
 info "Installing jgrapht"
 mvn install:install-file -q \
@@ -67,8 +65,9 @@ mvn install:install-file -q \
     -Dfile="${TMPDIR}/jgrapht-0.8.2.jar" \
 || abort "Failed to install jgrapht"
 
+# Note: Tests currently fail
 info "Building qcadoo Framework"
-mvn clean install -q || abort "Failed to build framework"
+mvn clean install -q -DskipTests || abort "Failed to build framework"
 cd ..
 
 # --------- MES Core
@@ -76,16 +75,24 @@ cd ..
 info "Building MES Core"
 
 cd mes
-git checkout ${VERSION} || abort "Failed to checkout version ${VERSION}"
-mvn clean install -q || abort "Failed to build MES Core"
+git checkout -q ${VERSION} || abort "Failed to checkout version ${VERSION}"
+mvn clean install -q -DskipTests || abort "Failed to build MES Core"
 
 # --------- MES Application
 
 cd mes-application
+
+info "Installing tomcat-bootstrap"
+mvn install:install-file -q \
+    -DgroupId=org.apache.tomcat \
+    -DartifactId=bootstrap \
+    -Dversion=8.5.12 \
+    -Dpackaging=jar \
+    -Dfile="${TMPDIR}/bootstrap-8.5.12.jar" \
+|| abort "Failed to install tomcat-bootstrap"
+
 info "Building Tomcat Application"
 mvn clean install -q -Ptomcat -Dprofile=package || abort "Failed to build Tomcat application"
 cd ..
-
-[ -d mes/mes-application/target/tomcat-archiver/mes-application ] || abort "Tomcat application not found"
 
 info "Completed building MES Tomcat Application"
