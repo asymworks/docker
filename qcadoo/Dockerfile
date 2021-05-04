@@ -24,7 +24,7 @@ RUN chmod +x /usr/local/bin/entrypoint.sh \
 
 COPY --from=builder /home/qcadoo/mes/mes-application/target/mes-application.zip /tmp/mes-application.zip
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends unzip \
+    && apt-get install -y --no-install-recommends gettext postgresql-client unzip \
     && unzip -d /srv/qcadoo/ /tmp/mes-application.zip \
     && chown -R qcadoo:qcadoo /srv/qcadoo/mes-application \
     && chmod +x /srv/qcadoo/mes-application/bin/*.sh
