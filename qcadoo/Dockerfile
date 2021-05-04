@@ -25,7 +25,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends gettext postgresql-client unzip \
     && unzip -d /srv/qcadoo/ /tmp/mes-application.zip \
     && chown -R qcadoo:qcadoo /srv/qcadoo/mes-application \
-    && chmod +x /srv/qcadoo/mes-application/bin/*.sh
+    && chmod +x /srv/qcadoo/mes-application/bin/*.sh \
+    && sed -i -Ee 's/(exec .*) start (.*)/\1 run \2/g' /srv/qcadoo/mes-application/bin/startup.sh
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
@@ -33,7 +34,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 EXPOSE 8080
 USER qcadoo
 
-COPY db.properties.conf /srv/qcadoo/db.properties.conf
+WORKDIR /srv/qcadoo
+COPY db.properties.conf db.properties.conf
 
 ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 CMD [ "start" ]
